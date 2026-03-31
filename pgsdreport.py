@@ -540,7 +540,7 @@ with tab1:
         ))
 
         fig_bar.update_layout(
-            **PLOTLY_LAYOUT,
+            PLOTLY_LAYOUT,
             barmode="group",
             height=max(450, len(chart_df) * 55),
             title=dict(text=f"Target {selected_quarter} vs Realisasi", font=dict(size=16, color="#e2e8f0")),
@@ -570,7 +570,7 @@ with tab1:
                           annotation_text="Target 100%",
                           annotation_font=dict(color="#fbbf24", size=10))
         fig_pct.update_layout(
-            **PLOTLY_LAYOUT,
+            PLOTLY_LAYOUT,
             height=max(450, len(chart_df_sorted) * 50),
             title=dict(text="Achievement Rate (%)", font=dict(size=16, color="#e2e8f0")),
             xaxis=dict(title="Achievement %", range=[0, max(chart_df_sorted["Achievement %"].max() * 1.2, 120)]),
@@ -622,7 +622,7 @@ with tab2:
             )
             fig_trend.update_traces(line=dict(width=2.5), marker=dict(size=8))
             fig_trend.update_layout(
-                **PLOTLY_LAYOUT,
+                PLOTLY_LAYOUT,
                 height=500,
                 title=dict(text="Tren Target Kuartal (Q1 → Q4)", font=dict(size=16, color="#e2e8f0")),
                 xaxis_title="Kuartal",
@@ -663,7 +663,7 @@ with tab2:
                         fillcolor="rgba(34,211,238,0.12)",
                     ))
                     fig_radar.update_layout(
-                        **PLOTLY_LAYOUT,
+                        PLOTLY_LAYOUT,
                         height=500,
                         polar=dict(
                             bgcolor="rgba(0,0,0,0)",
@@ -691,7 +691,7 @@ with tab2:
             labels={"Score": "Skor", "count": "Jumlah"},
         )
         fig_hist.update_layout(
-            **PLOTLY_LAYOUT,
+            PLOTLY_LAYOUT,
             height=350,
             title=dict(text="Distribusi Skor Indikator", font=dict(size=15, color="#e2e8f0")),
             bargap=0.1,
@@ -776,7 +776,7 @@ with tab3:
                 textfont=dict(size=12),
             ))
             fig_donut.update_layout(
-                **PLOTLY_LAYOUT,
+                PLOTLY_LAYOUT,
                 height=400,
                 title=dict(text=f"Status PI Focus — {selected_quarter}",
                            font=dict(size=16, color="#e2e8f0")),
