@@ -235,8 +235,7 @@ div[data-testid="stExpander"] {
 # ── Data Loading ─────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    file_path = os.path.join(os.path.dirname(__file__), "data",
-                             "ReportRealization_Pendidikan_Guru_Sekolah_Dasar__PGSD_.xlsx")
+    file_path = os.path.join(os.path.dirname(__file__), "ReportRealization_Pendidikan_Guru_Sekolah_Dasar__PGSD_.xlsx")
     df = pd.read_excel(file_path, header=0)
     df.columns = ["No", "Year", "Performance Indicator", "Unit Name",
                    "Target Q1", "Target Q2", "Target Q3", "Target Q4",
