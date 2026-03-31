@@ -510,8 +510,7 @@ with tab4:
         ddf=ddf[ddf["Performance Indicator"].str.contains(search, case=False, na=False)]
     st.markdown(f"Menampilkan **{len(ddf)}** indikator")
     cols=["No","Performance Indicator","Target Q1","Target Q2","Target Q3","Target Q4","Realization","Score","PI Focus","Achievement %","Status"]
-    st.dataframe(
-        ddf[cols].style.format({
+    styler = ddf[cols].style.format({
             "Target Q1":lambda v:f"{v:,.2f}" if pd.notna(v) else "—",
             "Target Q2":lambda v:f"{v:,.2f}" if pd.notna(v) else "—",
             "Target Q3":lambda v:f"{v:,.2f}" if pd.notna(v) else "—",
@@ -519,8 +518,13 @@ with tab4:
             "Realization":lambda v:f"{v:,.2f}" if pd.notna(v) else "—",
             "Score":lambda v:f"{v:,.2f}" if pd.notna(v) else "—",
             "Achievement %":lambda v:f"{v:.1f}%" if pd.notna(v) else "—",
-        }).applymap(lambda v:"color:#34d399" if v=="✅ Achieved" else ("color:#fbbf24" if v=="⚠️ On Track" else ("color:#f87171" if v=="❌ Below Target" else "")), subset=["Status"]),
-        use_container_width=True, height=600)
+        })
+    _status_css = lambda v:"color:#34d399" if v=="✅ Achieved" else ("color:#fbbf24" if v=="⚠️ On Track" else ("color:#f87171" if v=="❌ Below Target" else ""))
+    try:
+        styler = styler.map(_status_css, subset=["Status"])
+    except AttributeError:
+        styler = styler.applymap(_status_css, subset=["Status"])
+    st.dataframe(styler, use_container_width=True, height=600)
     st.download_button("⬇️ Download CSV", filtered_df.to_csv(index=False).encode("utf-8"),
                        "pgsd_performance_2026.csv","text/csv")
 
@@ -570,7 +574,7 @@ chatbot_html = f"""
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 #cb-toggle {{
-    position:fixed; bottom:28px; right:28px; z-index:99999;
+    position:fixed; bottom:28px; left:28px; z-index:99999;
     width:60px; height:60px; border-radius:50%;
     border:1px solid rgba(255,255,255,.25);
     background:linear-gradient(135deg,rgba(99,102,241,.7),rgba(139,92,246,.6),rgba(34,211,238,.5));
@@ -590,7 +594,7 @@ chatbot_html = f"""
 }}
 
 #cb-window {{
-    position:fixed; bottom:100px; right:28px; z-index:99998;
+    position:fixed; bottom:100px; left:28px; z-index:99998;
     width:400px; max-width:calc(100vw - 56px);
     height:560px; max-height:calc(100vh - 140px);
     border-radius:24px; overflow:hidden;
