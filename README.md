@@ -1,6 +1,6 @@
 # 🎓 PGSD Performance Indicator Dashboard 2026
 
-Dashboard interaktif untuk memvisualisasikan dan membandingkan **Performance Indicator** jurusan **Pendidikan Guru Sekolah Dasar (PGSD)** tahun 2026. Dibangun menggunakan **Streamlit** dan **Plotly** untuk analisis data yang responsif dan *user-friendly*.
+Dashboard interaktif untuk memvisualisasikan dan membandingkan **Performance Indicator** jurusan **Pendidikan Guru Sekolah Dasar (PGSD)** tahun 2026. Dibangun menggunakan **Streamlit**, **Plotly**, dan **OpenAI GPT-4.1** untuk analisis data yang responsif dan *user-friendly*.
 
 ---
 
@@ -9,14 +9,33 @@ Dashboard interaktif untuk memvisualisasikan dan membandingkan **Performance Ind
 | Fitur | Deskripsi |
 |-------|-----------|
 | **Perbandingan Target vs Realisasi** | Pilih kuartal (Q1–Q4) dan lihat perbandingan horizontal bar chart |
-| **Persentase Capaian** | Bar chart dengan warna otomatis: hijau (≥100%), kuning (≥75%), merah (<75%) |
-| **Analisis Tren Kuartal** | Line chart tren target dari Q1 hingga Q4 per indikator terpilih |
-| **Radar Chart** | Perbandingan normalized Target Q4 vs Realisasi dalam bentuk radar |
-| **PI Focus Cards** | Detail card khusus untuk indikator prioritas tinggi |
+| **Persentase Capaian** | Bar chart dengan warna otomatis (hijau/kuning/merah) |
+| **Analisis Tren Kuartal** | Line chart tren target dari Q1 hingga Q4 |
+| **Radar Chart** | Perbandingan normalized Target Q4 vs Realisasi |
+| **PI Focus Cards** | Detail card untuk indikator prioritas tinggi |
 | **Donut Chart Status** | Ringkasan visual status pencapaian PI Focus |
-| **Distribusi Skor** | Histogram distribusi skor seluruh indikator |
 | **Tabel Interaktif** | Pencarian, sortir, dan download data CSV |
-| **Filter Dinamis** | Filter berdasarkan kuartal, PI Focus, dan kategori indikator |
+| **🤖 AI Chatbot** | Floating chatbot (pojok kanan bawah) dengan desain Apple Liquid Glass/Glassmorphism |
+| **🤖 AI Summary** | Generate ringkasan analitis otomatis dengan GPT-4.1 |
+| **🌐 Multi-language** | Chatbot otomatis menyesuaikan bahasa (ID/EN) |
+| **⌨️ Typewriter Effect** | Output chatbot dengan efek typing dan rich text formatting |
+
+---
+
+## 🤖 AI Features
+
+### Floating Chatbot
+- Klik ikon 💬 di pojok kanan bawah untuk membuka chatbot
+- Desain **Apple Liquid Glass / Glassmorphism** dengan blur effect
+- Hanya menjawab pertanyaan seputar data PGSD 2026
+- Output rich text (bold, italic, bullet list, heading)
+- Efek typewriter yang cepat dan smooth
+- Auto-detect bahasa: input Indonesia → output Indonesia, input English → output English
+
+### AI Summary Generator
+- Tab "🤖 AI Summary" untuk generate ringkasan otomatis
+- Pilihan bahasa Indonesia atau English
+- Analisis komprehensif: overview, indikator tercapai, perlu perhatian, rekomendasi
 
 ---
 
@@ -99,6 +118,8 @@ Data bersumber dari **Report Realization** jurusan PGSD tahun 2026, berisi 65 Pe
 - **[Plotly](https://plotly.com/python/)** — Library visualisasi interaktif
 - **[Pandas](https://pandas.pydata.org/)** — Manipulasi & analisis data
 - **[OpenPyXL](https://openpyxl.readthedocs.io/)** — Pembacaan file Excel
+- **[OpenAI GPT-4.1](https://openai.com/)** — AI chatbot & auto-summary
+- **HTML/CSS/JavaScript** — Floating chatbot widget dengan glassmorphism design
 
 ---
 
