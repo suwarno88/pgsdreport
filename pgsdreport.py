@@ -149,15 +149,23 @@ def build_ctx(_df):
 data_ctx = build_ctx(df)
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
-PL = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(family="Plus Jakarta Sans,sans-serif",
-              color="#cbd5e1" if _is_dark() else "#334155"),
-    margin=dict(l=40,r=30,t=50,b=40),
-    legend=dict(bgcolor="rgba(30,41,59,0.6)" if _is_dark() else "rgba(255,255,255,0.8)",
-                bordercolor="rgba(99,102,241,0.2)", borderwidth=1, font=dict(size=11)),
-    xaxis=dict(gridcolor="rgba(99,102,241,0.08)", zerolinecolor="rgba(99,102,241,0.15)"),
-    yaxis=dict(gridcolor="rgba(99,102,241,0.08)", zerolinecolor="rgba(99,102,241,0.15)"))
+_chart_text = "#cbd5e1" if _is_dark() else "#1e293b"
+_chart_tick = "#94a3b8" if _is_dark() else "#475569"
 
+PL = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="Plus Jakarta Sans,sans-serif", color=_chart_text),
+    margin=dict(l=40,r=30,t=50,b=40),
+    legend=dict(bgcolor="rgba(30,41,59,0.6)" if _is_dark() else "rgba(255,255,255,0.9)",
+                bordercolor="rgba(99,102,241,0.2)", borderwidth=1,
+                font=dict(size=11, color=_chart_text)),
+    xaxis=dict(gridcolor="rgba(99,102,241,0.08)" if _is_dark() else "rgba(99,102,241,0.12)",
+               zerolinecolor="rgba(99,102,241,0.15)",
+               tickfont=dict(color=_chart_tick),
+               title_font=dict(color=_chart_text)),
+    yaxis=dict(gridcolor="rgba(99,102,241,0.08)" if _is_dark() else "rgba(99,102,241,0.12)",
+               zerolinecolor="rgba(99,102,241,0.15)",
+               tickfont=dict(color=_chart_tick),
+               title_font=dict(color=_chart_text)))
 C = {"pri":"#6366f1","sec":"#a78bfa","acc":"#22d3ee",
      "ok":"#10b981","warn":"#f59e0b","bad":"#ef4444","real":"#22d3ee"}
 
@@ -261,44 +269,50 @@ tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8 = st.tabs([
     "📊 Target vs Realisasi","📈 Analisis Kuartal","🎯 PI Focus","📋 Data Lengkap",
     "📝 Kegiatan","📣 Rencana Strategis","🤖 AI Summary","💬 AI Chat"])
 
-# ━━ TAB 1: Target vs Realisasi (show ALL, even without realization) ━━━━━━━━
+# ━━ TAB 1: Target vs Realisasi (show ALL indicators) ━━━━━━━━━━━━━━━━━━━━━━
 with tab1:
-    t1df = fdf.dropna(subset=[qcol]).copy()
+    # Use ALL filtered indicators, fill missing target/realization with 0
+    t1df = fdf.copy()
+    t1df["Tgt_display"] = t1df[qcol].fillna(0)
     t1df["Real_display"] = t1df["Realization"].fillna(0)
     if len(t1df)==0:
-        st.warning(f"Tidak ada data target untuk {selected_quarter}.")
+        st.warning(f"Tidak ada data untuk ditampilkan.")
     else:
         t1df["SN"] = t1df["Performance Indicator"].apply(lambda x: (x[:55]+"…") if len(str(x))>55 else x)
         t1df["A%"] = t1df.apply(lambda r: pct(r["Realization"], r[qcol]), axis=1)
 
-        # ── 1) Achievement chart FIRST (only rows with actual realization) ──
+        # ── 1) Achievement chart FIRST (only rows with actual realization & target) ──
         ach_df = t1df[t1df["A%"].notna()].sort_values("A%", ascending=True)
         if len(ach_df) > 0:
             st.markdown(f'<div class="section-header">🏆 Persentase Capaian ({selected_quarter})</div>', unsafe_allow_html=True)
             fig_ach = go.Figure(go.Bar(y=ach_df["SN"], x=ach_df["A%"], orientation="h",
                 marker=dict(color=[acol(v) for v in ach_df["A%"]]),
                 text=ach_df["A%"].apply(lambda v:f"{v:.1f}%"), textposition="outside",
-                textfont=dict(size=10, color=PL["font"]["color"])))
+                textfont=dict(size=10, color=_chart_text)))
             fig_ach.add_vline(x=100, line_dash="dash", line_color="#f59e0b", line_width=1.5,
                 annotation_text="100%", annotation_font=dict(color="#f59e0b", size=10))
             fig_ach.update_layout(PL, height=max(400, len(ach_df)*45),
-                title=dict(text="Achievement Rate (%)", font=dict(size=16)),
+                title=dict(text="Achievement Rate (%)", font=dict(size=16, color=_chart_text)),
                 xaxis=dict(title="Achievement %", range=[0, max(ach_df["A%"].max()*1.2, 120)]),
-                yaxis=dict(tickfont=dict(size=10)), showlegend=False)
+                yaxis=dict(tickfont=dict(size=10, color=_chart_tick)), showlegend=False)
             st.plotly_chart(fig_ach, use_container_width=True)
 
-        # ── 2) Target vs Realisasi bar chart SECOND (ALL indicators with target) ──
+        # ── 2) Target vs Realisasi SECOND (ALL indicators — including those without data) ──
         st.markdown(f'<div class="section-header">📊 Target {selected_quarter} vs Realisasi (Semua Indikator)</div>', unsafe_allow_html=True)
         fig_bar = go.Figure()
-        fig_bar.add_trace(go.Bar(y=t1df["SN"], x=t1df[qcol], name=f"Target {selected_quarter}",
-            orientation="h", marker=dict(color=C["pri"]), opacity=0.85,
-            text=t1df[qcol].apply(lambda v:f"{v:,.0f}"), textposition="auto", textfont=dict(size=10)))
-        fig_bar.add_trace(go.Bar(y=t1df["SN"], x=t1df["Real_display"], name="Realisasi",
-            orientation="h", marker=dict(color=C["real"]), opacity=0.85,
-            text=t1df["Real_display"].apply(lambda v:f"{v:,.0f}" if v>0 else "—"), textposition="auto", textfont=dict(size=10)))
-        fig_bar.update_layout(PL, barmode="group", height=max(500, len(t1df)*45),
-            title=dict(text=f"Target {selected_quarter} vs Realisasi", font=dict(size=16)),
-            yaxis=dict(autorange="reversed", tickfont=dict(size=10)),
+        fig_bar.add_trace(go.Bar(y=t1df["SN"], x=t1df["Tgt_display"],
+            name=f"Target {selected_quarter}", orientation="h",
+            marker=dict(color=C["pri"]), opacity=0.85,
+            text=t1df.apply(lambda r: f"{r['Tgt_display']:,.0f}" if r["Tgt_display"]>0 else "—", axis=1),
+            textposition="auto", textfont=dict(size=10)))
+        fig_bar.add_trace(go.Bar(y=t1df["SN"], x=t1df["Real_display"],
+            name="Realisasi", orientation="h",
+            marker=dict(color=C["real"]), opacity=0.85,
+            text=t1df.apply(lambda r: f"{r['Real_display']:,.0f}" if r["Real_display"]>0 else "—", axis=1),
+            textposition="auto", textfont=dict(size=10)))
+        fig_bar.update_layout(PL, barmode="group", height=max(600, len(t1df)*40),
+            title=dict(text=f"Target {selected_quarter} vs Realisasi", font=dict(size=16, color=_chart_text)),
+            yaxis=dict(autorange="reversed", tickfont=dict(size=10, color=_chart_tick)),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
         st.plotly_chart(fig_bar, use_container_width=True)
 
